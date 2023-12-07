@@ -9,8 +9,6 @@ const timesAndDistances = input.split('\n').map((line) => {
   return numbers;
 });
 
-const transposed = timesAndDistances[0].map((_, colIndex): [number, number] => [timesAndDistances[0][colIndex], timesAndDistances[1][colIndex]]);
-
 const getDistance = (time: number, pressingTime: number): number => {
   const velocity = pressingTime;
   const remainingTime = time - pressingTime;
@@ -89,12 +87,25 @@ const getVariations2 = (time: number, distance: number): number => {
   }
 
   const upperLimit = binarySearch(0, time, (value) => condition2(value));
-  console.log(lowerLimit, upperLimit);
   return upperLimit - lowerLimit;
 };
 
-const result = transposed.reduce((acc, [time, distance]) => {
-  return acc * getVariations2(time, distance);
-}, 1);
 
-console.log(result);
+
+const first = (timesAndDistances: number[][]): number => {
+  const transposed = timesAndDistances[0].map((_, colIndex): [number, number] => [timesAndDistances[0][colIndex], timesAndDistances[1][colIndex]]);
+
+  const result = transposed.reduce((acc, [time, distance]) => {
+    return acc * getVariations2(time, distance);
+  }, 1);
+
+  return result;
+};
+
+const second = (timesAndDistances: number[][]): number => {
+  const time = parseInt(timesAndDistances[0].map((v) => `${v}`).join(''));
+  const distance = parseInt(timesAndDistances[1].map((v) => `${v}`).join(''));
+  return getVariations2(time, distance);
+};
+
+console.log(second(timesAndDistances));
