@@ -8,15 +8,45 @@ const lines: { hand: string; bid: number }[] = input
     return { hand, bid: parseInt(bidRaw) };
   });
 
-const grouper = (hand: string): Map<string, number> => {
+const grouperFirst = (hand: string): Map<string, number> => {
   return Array.from(hand).reduce((acc, letter) => {
     acc.set(letter, (acc.get(letter) || 0) + 1);
     return acc;
   }, new Map());
 };
 
+const grouperSecond = (hand: string): Map<string, number> => {
+  const groups = grouperFirst(hand);
+  const jokers = groups.get("J");
+  if (!jokers || hand === "JJJJJ") {
+    return groups;
+  }
+  groups.delete("J");
+  const maxHands: string | null = [...groups.entries()].reduce(({letter: prevLetter, count: prevCount}: {letter: string | null, count: number}, [letter, count]) => {
+    if (count > prevCount) {
+      return {letter, count};
+    }
+    else {
+      return {letter: prevLetter, count: prevCount};
+    }
+  }, {letter: null, count: 0}).letter;
+
+  if (!maxHands) {
+    throw new Error(`No max hands: ${hand}`);
+  }
+
+  groups.set(maxHands, groups.get(maxHands)! + jokers);
+  return groups;
+};
+
+const grouper = grouperSecond;
+
 const cardStrengths = new Map<string, number>([
   "A", "K", "Q", "J", "T", "9", "8", "7", "6", "5", "4", "3", "2"
+].reverse().map((v, index) => [v, index + 1]));
+
+const cardStrengths2 = new Map<string, number>([
+  "A", "K", "Q", "T", "9", "8", "7", "6", "5", "4", "3", "2", "J"
 ].reverse().map((v, index) => [v, index + 1]));
 
 const sorter = (a: { hand: string; bid: number }, b: { hand: string; bid: number }) => {
@@ -28,38 +58,25 @@ const sorter = (a: { hand: string; bid: number }, b: { hand: string; bid: number
     const aType = aSortedTypes[i] ?? 0;
     const bType = bSortedTypes[i] ?? 0;
     if (aType > bType) {
-      // console.log(a.hand, b.hand, "types", -1, aSortedTypes, bSortedTypes);
       return 1;
     }
     if (aType < bType) {
-      // console.log(a.hand, b.hand, "types", 1, aSortedTypes, bSortedTypes);
       return -1;
     }
   }
-  // const aMax = Math.max(...aMap.values());
-  // const bMax = Math.max(...bMap.values());
-  // if (aMax > bMax) {
-  //   return 1;
-  // }
-  // if (aMax < bMax) {
-  //   return -1;
-  // }
 
   for (let i = 0; i < a.hand.length; i++) {
     const aCard = a.hand[i];
     const bCard = b.hand[i];
-    const aStrength = cardStrengths.get(aCard)!;
-    const bStrength = cardStrengths.get(bCard)!;
+    const aStrength = cardStrengths2.get(aCard)!;
+    const bStrength = cardStrengths2.get(bCard)!;
     if (aStrength > bStrength) {
-      // console.log(a.hand, b.hand, "strength", 1, `${aCard} > ${bCard}`);
       return 1;
     }
     if (aStrength < bStrength) {
-      // console.log(a.hand, b.hand, "strength", -1, `${aCard} < ${bCard}`);
       return -1;
     }
   }
-  // console.log(a.hand, b.hand, "WTF");
 
   return 0;
 };
