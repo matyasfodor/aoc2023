@@ -59,7 +59,6 @@ const getNewBeams = (beam: Beam, map: string[][]): Beam[] => {
     ];
   }
   if (map[newCoords.y][newCoords.x] === "/") {
-    // console.log(`char / newCoords ${newCoords.x} ${newCoords.y} ${beam.direction} LeftTurn ${leftTurn[beam.direction]}`);
     return [
       {
         ...newCoords,
@@ -105,10 +104,8 @@ const getCover = (map: string[][], startingPosition: Beam): boolean[][] => {
       W: false,
     }))
   );
-  // getNewBeams({ x: 0, y: 0, direction: "E" }, map);
   let beams: Beam[] = [startingPosition];
   while (beams.length > 0) {
-    // console.log('### beams', beams);
     const newBeams: Beam[] = [];
     beams.forEach((beam) => {
       const newBeamsForBeam: Beam[] = getNewBeams(beam, map).filter(
@@ -116,7 +113,6 @@ const getCover = (map: string[][], startingPosition: Beam): boolean[][] => {
       );;
       newBeams.push(...newBeamsForBeam);
     });
-    // console.log('### newBeams', newBeams);
     newBeams.forEach(({ x, y, direction }) => {
       covered[y][x][direction] = true;
     });
@@ -165,9 +161,7 @@ const second = (input: string): number => {
     })),
   ];
 
-  // const covered = getCover(map);
   return Math.max(...startingPositions.map((position) => getCoverSize(getCover(map, position))));
 };
 
-// console.log("First", first(input));
 console.log("Second", second(input));
