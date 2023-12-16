@@ -96,7 +96,7 @@ const dispCover = (
   console.log(coveredMap.map((line) => line.join("")).join("\n"));
 };
 
-const getCover = (map: string[][]): boolean[][] => {
+const getCover = (map: string[][], startingPosition: Beam): boolean[][] => {
   const covered: Record<Direction, boolean>[][] = map.map((line) =>
     line.map(() => ({
       N: false,
@@ -106,7 +106,7 @@ const getCover = (map: string[][]): boolean[][] => {
     }))
   );
   // getNewBeams({ x: 0, y: 0, direction: "E" }, map);
-  let beams: Beam[] = [{ x: -1, y: 0, direction: "E" }];
+  let beams: Beam[] = [startingPosition];
   while (beams.length > 0) {
     // console.log('### beams', beams);
     const newBeams: Beam[] = [];
@@ -129,13 +129,15 @@ const getCover = (map: string[][]): boolean[][] => {
   );
 };
 
+const getCoverSize = (covered: boolean[][]): number => covered.reduce(
+  (sum, line) => sum + line.filter((cell) => cell).length,
+  0
+);
+
 const first = (input: string): number => {
   const map = parse(input);
-  const covered = getCover(map);
-  return covered.reduce(
-    (sum, line) => sum + line.filter((cell) => cell).length,
-    0
-  );
+  const covered = getCover(map, { x: -1, y: 0, direction: "E" });
+  return getCoverSize(covered);
 };
 
 const second = (input: string): number => {
@@ -161,9 +163,11 @@ const second = (input: string): number => {
       y: map.length,
       direction: "N"
     })),
-  ]
-  const covered = getCover(map);
+  ];
+
+  // const covered = getCover(map);
+  return Math.max(...startingPositions.map((position) => getCoverSize(getCover(map, position))));
 };
 
-console.log("First", first(input));
+// console.log("First", first(input));
 console.log("Second", second(input));
