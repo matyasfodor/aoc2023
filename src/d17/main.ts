@@ -50,7 +50,7 @@ const printTrace = (map: number[][], coords: [number, number][]) => {
   console.log(mapCopy.map((line) => line.join("")).join("\n"));
 };
 
-const first = (map: number[][]): number => {
+const first = (map: number[][], low: number, high: number): number => {
   const traces: PointState[][] = map.map((line) => line.map(() => ({})));
   const fringe = new Set(["0,0"]);
   traces[0][0] = {
@@ -73,8 +73,11 @@ const first = (map: number[][]): number => {
     const state = traces[y][x];
     if (state.E !== undefined) {
       let { value, trace: currentTrace } = state.E;
-      for (let i = x + 1; i < Math.min(map[y].length, x + 4); i++) {
+      for (let i = x + 1; i < Math.min(map[y].length, x + high); i++) {
         value += map[y][i];
+        if (i < x+low) {
+          continue;
+        }
         const currentStringified = JSON.stringify(traces[y][i]);
         traces[y][i] = {
           ...traces[y][i],
@@ -100,8 +103,11 @@ const first = (map: number[][]): number => {
     }
     if (state.W !== undefined) {
       let { value, trace: currentTrace } = state.W;
-      for (let i = x - 1; i > Math.max(-1, x - 4); i--) {
+      for (let i = x - 1; i > Math.max(-1, x - high); i--) {
         value += map[y][i];
+        if (x-low < i) {
+          continue;
+        }
         const currentStringified = JSON.stringify(traces[y][i]);
         traces[y][i] = {
           ...traces[y][i],
@@ -127,8 +133,11 @@ const first = (map: number[][]): number => {
     }
     if (state.N !== undefined) {
       let { value, trace: currentTrace } = state.N;
-      for (let i = y - 1; i > Math.max(-1, y - 4); i--) {
+      for (let i = y - 1; i > Math.max(-1, y - high); i--) {
         value += map[i][x];
+        if (y-low < i) {
+          continue;
+        }
         const currentStringified = JSON.stringify(traces[i][x]);
         traces[i][x] = {
           ...traces[i][x],
@@ -154,8 +163,11 @@ const first = (map: number[][]): number => {
     }
     if (state.S !== undefined) {
       let { value, trace: currentTrace } = state.S;
-      for (let i = y + 1; i < Math.min(map.length, y + 4); i++) {
+      for (let i = y + 1; i < Math.min(map.length, y + high); i++) {
         value += map[i][x];
+        if (i < y+low) {
+          continue;
+        }
         const currentStringified = JSON.stringify(traces[i][x]);
         traces[i][x] = {
           ...traces[i][x],
@@ -225,5 +237,5 @@ const first = (map: number[][]): number => {
   );
 };
 
-console.log("First part:", first(parse(input)));
-// console.log('First part:', first(parse(input)));
+// console.log("First part:", first(parse(input), 1, 4));
+console.log('Second part:', first(parse(input), 4, 11));
