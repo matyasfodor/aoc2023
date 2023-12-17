@@ -20,7 +20,7 @@ const repeat = (n: number, s: string): string => {
   return Array.from({ length: n }, () => s).join("");
 };
 
-const traceToCorrds = (trace: string): [number, number][] => {
+const traceToCoords = (trace: string): [number, number][] => {
   const ret: [number, number][] = [[0, 0]];
   for (const char of trace) {
     const [x, y] = ret[ret.length - 1];
@@ -63,9 +63,7 @@ const first = (map: number[][], low: number, high: number): number => {
       trace: "",
     },
   };
-  // const fringeMap = new Map<string, string>([["0,0,S", ""], ["0,0,E", ""]]);
 
-  let prev = "";
   while (fringe.size > 0) {
     const firstElem = [...fringe][0];
     fringe.delete(firstElem);
@@ -187,34 +185,11 @@ const first = (map: number[][], low: number, high: number): number => {
               : traces[i][x].W,
         };
         if (currentStringified !== JSON.stringify(traces[i][x])) {
-          // fringeMap.set(`${x},${i}`, fringeMap.get(firstElem)! + "S");
           fringe.add(`${x},${i}`);
         }
       }
     }
-    // console.log(fringe);
-    // console.log(traces);
-    // const lastElem = JSON.stringify(traces[map.length - 1][map[0].length - 1]);
-    // if (prev !== lastElem) {
-    //   console.log(lastElem);
-    //   // console.log('Last elem trace', fringeMap.get(`${map[0].length - 1},${map.length - 1}`))
-    //   prev = lastElem;
-    // }
-    // const lastElem = traces[map.length - 1][map[0].length - 1];
-    // Object.values(lastElem).forEach(({ value, trace }) => {
-    //   if (value === 1128) {
-    //     const coords = traceToCorrds(trace);
-    //     console.log("\n\n")
-    //     // printTrace(map, coords);
-    //     console.log(trace);
-
-    //     console.log("\n\n")
-    //   }
-    // });
   }
-  // console.log("Last one", traces[map.length - 1][map[0].length - 1]);
-  // console.log(fringeMap)
-
   let min = Infinity;
   let minTrace = "";
   [...Object.values(traces[map.length - 1][map[0].length - 1])].forEach(
@@ -225,10 +200,6 @@ const first = (map: number[][], low: number, high: number): number => {
       }
     }
   );
-
-  // const coords = traceToCorrds(minTrace);
-  // console.log(minTrace);
-  // printTrace(map, coords);
 
   return Math.min(
     ...[...Object.values(traces[map.length - 1][map[0].length - 1])].map(
